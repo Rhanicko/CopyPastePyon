@@ -126,7 +126,7 @@ code, textarea { font-family: ui-monospace, SFMono-Regular, Consolas, "Liberatio
 .editor-actions { display: flex; flex-wrap: wrap; gap: 9px; }
 .format-notice { margin: 15px 0; border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border)); border-radius: 8px; background: color-mix(in srgb, var(--accent) 10%, var(--surface)); padding: 10px 12px; color: var(--text); font-size: 14px; }
 
-#toast { position: fixed; z-index: 10; bottom: 22px; left: 50%; max-width: min(92vw, 540px); border-radius: 9px; background: var(--accent); color: var(--accent-ink); font-size: 14px; font-weight: 750; opacity: 0; padding: 12px 15px; pointer-events: none; transform: translate(-50%, 18px); transition: .18s ease; }
+#toast { position: fixed; z-index: 10; bottom: 22px; left: 50%; max-width: min(92vw, 540px); border-radius: 9px; background: #075e3b; color: #ffffff; font-size: 14px; font-weight: 750; opacity: 0; padding: 12px 15px; pointer-events: none; transform: translate(-50%, 18px); transition: .18s ease; }
 #toast.show { opacity: 1; transform: translate(-50%, 0); }
 #toast.error { background: var(--danger); color: #2b0710; }
 
