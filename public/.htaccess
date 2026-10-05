@@ -1,6 +1,10 @@
 Options -Indexes
 RewriteEngine On
 
+# Keep application routes, clipboard access, and CDN fallbacks in a secure context.
+RewriteCond %{HTTPS} !=on
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+
 # Route InfinityFree PHP API requests while leaving static assets untouched.
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^api(?:/.*)?$ api/index.php [QSA,L]

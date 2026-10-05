@@ -194,7 +194,7 @@ code, textarea { font-family: ui-monospace, SFMono-Regular, Consolas, "Liberatio
 .indent-remainder { display: inline; }
 .code-editor textarea { position: relative; z-index: 1; min-width: 0; min-height: 460px; margin: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; caret-color: var(--accent); color: transparent; padding: 14px 18px; resize: none; scrollbar-color: color-mix(in srgb, var(--muted) 55%, transparent) transparent; scrollbar-width: thin; }
 .code-editor textarea::selection { background: color-mix(in srgb, var(--accent) 28%, transparent); color: transparent; }
-.code-editor textarea:focus { box-shadow: none; }
+.code-editor textarea:focus, .code-editor textarea:focus-visible { outline: 0; box-shadow: none; }
 .code-editor textarea::-webkit-scrollbar { width: 10px; height: 10px; }
 .code-editor textarea::-webkit-scrollbar-track { background: transparent; }
 .code-editor textarea::-webkit-scrollbar-thumb { border: 3px solid transparent; border-radius: 999px; background: color-mix(in srgb, var(--muted) 55%, transparent); background-clip: padding-box; }
