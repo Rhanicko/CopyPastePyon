@@ -145,8 +145,9 @@ function list_notes(PDO $pdo, array $workspace, array $query): never {
 function create_note(PDO $pdo, array $config, array $workspace, array $session, array $body): never {
     if (!can_edit($session)) respond(403, ['error' => 'You do not have permission to perform this action.']); $title = mb_substr(trim((string) ($body['title'] ?? '')), 0, 120); $language = (string) ($body['language'] ?? 'JavaScript'); $content = (string) ($body['content'] ?? '');
     if ($title === '') respond(422, ['error' => 'A note title is required.']); if (!in_array($language, valid_languages(), true)) respond(422, ['error' => 'Please choose a supported language.']); if (strlen($content) > (int) ($config['max_note_size'] ?? 200000)) respond(413, ['error' => 'This note is larger than the configured limit.']);
-    $stamp = now(); $pdo->prepare('INSERT INTO notes (workspace_id, title, language, content, created_by, updated_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)')->execute([$workspace['id'], $title, $language, $content, $session['display_name'], $session['display_name'], $stamp, $stamp]); touch_workspace($pdo, (int) $workspace['id']);
-    $statement = $pdo->prepare('SELECT * FROM notes WHERE id = ?'); $statement->execute([(int) $pdo->lastInsertId()]); respond(201, ['note' => note_dto($statement->fetch())]);
+    $stamp = now(); $pdo->prepare('INSERT INTO notes (workspace_id, title, language, content, created_by, updated_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)')->execute([$workspace['id'], $title, $language, $content, $session['display_name'], $session['display_name'], $stamp, $stamp]);
+    $noteId = (int) $pdo->lastInsertId(); touch_workspace($pdo, (int) $workspace['id']);
+    $statement = $pdo->prepare('SELECT * FROM notes WHERE id = ?'); $statement->execute([$noteId]); respond(201, ['note' => note_dto($statement->fetch())]);
 }
 function update_note(PDO $pdo, array $config, array $workspace, array $session, int $noteId, array $body): never {
     if (!can_edit($session)) respond(403, ['error' => 'You do not have permission to perform this action.']); $statement = $pdo->prepare('SELECT * FROM notes WHERE id = ? AND workspace_id = ?'); $statement->execute([$noteId, $workspace['id']]); $note = $statement->fetch(); if (!$note) respond(404, ['error' => 'Note not found.']);
