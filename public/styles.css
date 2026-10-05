@@ -43,6 +43,10 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 h1, h2, h3, p { margin-top: 0; }
 h1 { letter-spacing: -.045em; line-height: 1.08; }
 input, select, textarea { width: 100%; margin-top: 7px; padding: 11px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); }
+select { appearance: none; cursor: pointer; padding-right: 42px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='m4 6 4 4 4-4' stroke='%239aa8ba' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-position: right 14px center; background-repeat: no-repeat; background-size: 16px; }
+select:hover { border-color: color-mix(in srgb, var(--accent) 42%, var(--border)); background-color: var(--surface-raised); }
+select:focus { border-color: var(--accent); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 13%, transparent); outline: 0; }
+select option { background: var(--surface); color: var(--text); }
 input::placeholder, textarea::placeholder { color: color-mix(in srgb, var(--muted) 80%, transparent); }
 textarea { min-height: 430px; resize: vertical; tab-size: 2; }
 #app > section { animation: view-in .32s cubic-bezier(.22, 1, .36, 1); }
@@ -82,25 +86,21 @@ form { margin-top: 24px; }
 label { display: block; margin: 18px 0; font-size: 14px; font-weight: 700; }
 label span { color: var(--muted); font-weight: 400; }
 .code-input { font-family: ui-monospace, monospace; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; }
-.setup-intro { max-width: 430px; margin-bottom: 21px; font-size: 15px; }
-.code-preview { display: flex; align-items: center; justify-content: space-between; gap: 16px; border: 1px solid color-mix(in srgb, var(--accent) 28%, var(--border)); border-radius: 12px; background: color-mix(in srgb, var(--accent) 7%, var(--bg)); padding: 14px 15px; }
-.code-preview span, .code-preview small { display: block; color: var(--muted); font-size: 12px; }
-.code-preview strong { display: block; margin-top: 4px; color: var(--accent); font-family: ui-monospace, monospace; font-size: 18px; letter-spacing: .13em; }
-.code-preview small { max-width: 135px; text-align: right; line-height: 1.4; }
-.setup-form { display: grid; gap: 2px; margin-top: 23px; }
+.setup-intro { max-width: 430px; margin-bottom: 23px; font-size: 15px; }
+.setup-form { display: grid; gap: 9px; margin-top: 22px; }
+.simple-setup-form > * { animation: field-settle .32s cubic-bezier(.22, 1, .36, 1) both; }
+.simple-setup-form > :nth-child(2) { animation-delay: .045s; }
+.simple-setup-form > :nth-child(3) { animation-delay: .09s; }
 .setup-form label { margin-bottom: 6px; }
-.setup-form input, .setup-form select { min-height: 46px; margin-top: 8px; background: color-mix(in srgb, var(--bg) 78%, var(--surface)); transition: border-color .18s ease, box-shadow .18s ease, background .18s ease; }
+.setup-form input, .setup-form select { min-height: 48px; margin-top: 8px; background-color: color-mix(in srgb, var(--bg) 78%, var(--surface)); transition: border-color .18s ease, box-shadow .18s ease, background-color .18s ease, transform .18s ease; }
 .setup-form input:hover, .setup-form select:hover { border-color: color-mix(in srgb, var(--accent) 40%, var(--border)); }
-.setup-form input:focus, .setup-form select:focus { border-color: var(--accent); background: var(--bg); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 13%, transparent); outline: 0; }
-.field-group + .field-group { margin-top: 7px; }
-.field-help { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.45; }
-.create-workspace-button { display: grid; min-height: 58px; margin-top: 23px; padding: 9px 16px; place-content: center; line-height: 1.15; }
+.setup-form input:focus, .setup-form select:focus { border-color: var(--accent); background-color: var(--bg); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 13%, transparent); outline: 0; transform: translateY(-1px); }
+.create-workspace-button { display: grid; min-height: 54px; margin-top: 14px; padding: 9px 16px; place-content: center; line-height: 1.15; transition: transform .18s ease, box-shadow .18s ease, background-color .18s ease; }
+.create-workspace-button:hover { box-shadow: 0 9px 22px color-mix(in srgb, var(--accent) 20%, transparent); transform: translateY(-2px); }
+.create-workspace-button:active { transform: translateY(0); }
 .create-workspace-button > span { font-size: 15px; }
-.create-workspace-button small { margin-top: 3px; font-size: 11px; font-weight: 650; opacity: .72; }
 .create-workspace-button[aria-busy="true"] { display: inline-flex; align-items: center; justify-content: center; gap: 9px; }
 .button-spinner { display: inline-block; width: 15px; height: 15px; border: 2px solid color-mix(in srgb, var(--accent-ink) 38%, transparent); border-top-color: var(--accent-ink); border-radius: 50%; animation: spin .6s linear infinite; }
-.form-footnote { display: flex; align-items: center; justify-content: center; gap: 7px; margin: 18px 0 0; color: var(--muted); font-size: 12px; text-align: center; }
-.form-footnote span { color: var(--accent); font-weight: 900; }
 
 header { position: sticky; top: 0; z-index: 5; display: flex; height: 68px; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); background: color-mix(in srgb, var(--bg) 93%, transparent); backdrop-filter: blur(12px); padding: 0 clamp(16px, 4vw, 48px); }
 .logo { padding: 7px 0; background: transparent; color: var(--text); font-size: 17px; }
@@ -198,8 +198,6 @@ code, textarea { font-family: ui-monospace, SFMono-Regular, Consolas, "Liberatio
   .note-actions { flex-wrap: wrap; }
   .form-page { padding: 18px 16px 30px; }
   .panel { border-radius: 16px; padding: 25px 21px; }
-  .code-preview { align-items: flex-start; flex-direction: column; gap: 8px; }
-  .code-preview small { max-width: none; text-align: left; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -210,3 +208,4 @@ code, textarea { font-family: ui-monospace, SFMono-Regular, Consolas, "Liberatio
 @keyframes loading-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(.93); } }
 @keyframes loading-sweep { 0% { transform: translateX(-115%); } 55%, 100% { transform: translateX(240%); } }
 @keyframes spin { to { transform: rotate(1turn); } }
+@keyframes field-settle { from { transform: translateY(6px); } to { transform: translateY(0); } }
