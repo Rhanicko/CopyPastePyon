@@ -65,6 +65,17 @@ The database schema is initialized on application startup. For a clean local res
 4. Persist and back up the SQLite data directory. For multiple server processes, move persistence to PostgreSQL and configure a shared Socket.IO adapter before load balancing.
 5. Run with a service manager (systemd, Docker, or your hosting platform) using `npm start`.
 
+## InfinityFree deployment
+
+InfinityFree cannot run the Node.js/Socket.IO server. This repository includes a safe PHP/MySQL target for that host without changing the Node deployment:
+
+1. In `public/api`, copy `config.example.php` to `config.php` and enter the MySQL credentials from InfinityFree. Set a new, long random `app_secret`; do not use an account password.
+2. Upload the **contents** of `public` to the domain's `htdocs` directory, including `.htaccess` and `api/`.
+3. Confirm the MySQL database is empty or dedicated to this app; the PHP API creates its tables on first use.
+4. Visit the domain, create a workspace, then open the share link in a separate browser window and confirm notes save correctly.
+
+The InfinityFree target uses short polling for updates and approximate activity presence because free hosting does not support Socket.IO/WebSockets. It preserves code in the format preview rather than running a server-side formatter. Use the Node deployment for full real-time sync and formatting.
+
 ## API overview
 
 Workspace endpoints are under `/api/workspaces`: create, join, inspect, settings, regenerate code, and close. Notes are nested beneath their workspace and require an `X-Session-Token` issued by host/join. The token is generated cryptographically and scoped to one workspace. Socket events cover `note:created`, `note:updated`, `note:deleted`, `workspace:users_changed`, permission changes, code regeneration, and closure.

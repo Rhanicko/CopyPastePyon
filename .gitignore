@@ -1,5 +1,6 @@
 node_modules/
 .env
+public/api/config.php
 data/*.db
 data/*.db-*
 coverage/

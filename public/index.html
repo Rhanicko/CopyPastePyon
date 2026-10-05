@@ -6,7 +6,7 @@
   <meta name="description" content="CopyPastePyon is a simple shared code workspace." />
   <title>CopyPastePyon — Copy. Paste. Connect.</title>
   <link rel="stylesheet" href="/styles.css" />
-  <link rel="stylesheet" href="/vendor/highlight/styles/github-dark.css" />
+  <link rel="stylesheet" href="/vendor/highlight/styles/github-dark.css" onerror="this.onerror=null;this.href='https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/styles/github-dark.min.css'" />
 </head>
 <body class="booting">
   <main id="app" aria-live="polite" aria-busy="true">
@@ -18,7 +18,7 @@
     </section>
   </main>
   <div id="toast" role="status" aria-live="polite"></div>
-  <script src="/vendor/highlight/highlight.min.js"></script>
+  <script src="/vendor/highlight/highlight.min.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/highlight.min.js'"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script src="/app.js"></script>
 </body>
