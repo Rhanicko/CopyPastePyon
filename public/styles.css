@@ -73,14 +73,34 @@ textarea { min-height: 430px; resize: vertical; tab-size: 2; }
 .danger-link { color: var(--danger); }
 .quiet, .muted { color: var(--muted); font-size: 14px; line-height: 1.5; }
 
-.form-page { max-width: 540px; margin: auto; padding: 42px 22px; }
+.form-page { min-height: 100vh; max-width: 540px; margin: auto; padding: clamp(28px, 6vh, 56px) 22px; }
 .back { margin-bottom: 24px; }
-.panel { border: 1px solid var(--border); border-radius: 16px; background: var(--surface); box-shadow: 0 16px 42px rgb(0 0 0 / 12%); padding: clamp(24px, 6vw, 34px); }
-.panel h1 { margin-bottom: 10px; font-size: 34px; }
+.panel { position: relative; overflow: hidden; border: 1px solid var(--border); border-radius: 18px; background: linear-gradient(145deg, color-mix(in srgb, var(--surface) 96%, white), var(--surface)); box-shadow: 0 20px 52px rgb(0 0 0 / 18%); padding: clamp(24px, 6vw, 36px); }
+.panel::before { position: absolute; top: 0; right: 26px; left: 26px; height: 2px; border-radius: 999px; background: linear-gradient(90deg, transparent, var(--accent), transparent); content: ''; opacity: .9; }
+.panel h1 { max-width: 390px; margin-bottom: 10px; font-size: clamp(32px, 7vw, 38px); }
 form { margin-top: 24px; }
 label { display: block; margin: 18px 0; font-size: 14px; font-weight: 700; }
 label span { color: var(--muted); font-weight: 400; }
 .code-input { font-family: ui-monospace, monospace; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; }
+.setup-intro { max-width: 430px; margin-bottom: 21px; font-size: 15px; }
+.code-preview { display: flex; align-items: center; justify-content: space-between; gap: 16px; border: 1px solid color-mix(in srgb, var(--accent) 28%, var(--border)); border-radius: 12px; background: color-mix(in srgb, var(--accent) 7%, var(--bg)); padding: 14px 15px; }
+.code-preview span, .code-preview small { display: block; color: var(--muted); font-size: 12px; }
+.code-preview strong { display: block; margin-top: 4px; color: var(--accent); font-family: ui-monospace, monospace; font-size: 18px; letter-spacing: .13em; }
+.code-preview small { max-width: 135px; text-align: right; line-height: 1.4; }
+.setup-form { display: grid; gap: 2px; margin-top: 23px; }
+.setup-form label { margin-bottom: 6px; }
+.setup-form input, .setup-form select { min-height: 46px; margin-top: 8px; background: color-mix(in srgb, var(--bg) 78%, var(--surface)); transition: border-color .18s ease, box-shadow .18s ease, background .18s ease; }
+.setup-form input:hover, .setup-form select:hover { border-color: color-mix(in srgb, var(--accent) 40%, var(--border)); }
+.setup-form input:focus, .setup-form select:focus { border-color: var(--accent); background: var(--bg); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 13%, transparent); outline: 0; }
+.field-group + .field-group { margin-top: 7px; }
+.field-help { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.45; }
+.create-workspace-button { display: grid; min-height: 58px; margin-top: 23px; padding: 9px 16px; place-content: center; line-height: 1.15; }
+.create-workspace-button > span { font-size: 15px; }
+.create-workspace-button small { margin-top: 3px; font-size: 11px; font-weight: 650; opacity: .72; }
+.create-workspace-button[aria-busy="true"] { display: inline-flex; align-items: center; justify-content: center; gap: 9px; }
+.button-spinner { display: inline-block; width: 15px; height: 15px; border: 2px solid color-mix(in srgb, var(--accent-ink) 38%, transparent); border-top-color: var(--accent-ink); border-radius: 50%; animation: spin .6s linear infinite; }
+.form-footnote { display: flex; align-items: center; justify-content: center; gap: 7px; margin: 18px 0 0; color: var(--muted); font-size: 12px; text-align: center; }
+.form-footnote span { color: var(--accent); font-weight: 900; }
 
 header { position: sticky; top: 0; z-index: 5; display: flex; height: 68px; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); background: color-mix(in srgb, var(--bg) 93%, transparent); backdrop-filter: blur(12px); padding: 0 clamp(16px, 4vw, 48px); }
 .logo { padding: 7px 0; background: transparent; color: var(--text); font-size: 17px; }
@@ -176,12 +196,17 @@ code, textarea { font-family: ui-monospace, SFMono-Regular, Consolas, "Liberatio
   .landing-actions button { width: 100%; }
   .workspace-title { align-items: flex-start; flex-direction: column; }
   .note-actions { flex-wrap: wrap; }
+  .form-page { padding: 18px 16px 30px; }
+  .panel { border-radius: 16px; padding: 25px 21px; }
+  .code-preview { align-items: flex-start; flex-direction: column; gap: 8px; }
+  .code-preview small { max-width: none; text-align: left; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
 }
 
-@keyframes view-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes view-in { from { transform: translateY(8px); } to { transform: translateY(0); } }
 @keyframes loading-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(.93); } }
 @keyframes loading-sweep { 0% { transform: translateX(-115%); } 55%, 100% { transform: translateX(240%); } }
+@keyframes spin { to { transform: rotate(1turn); } }
