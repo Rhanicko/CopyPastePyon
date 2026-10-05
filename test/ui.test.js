@@ -39,6 +39,15 @@ test('browser host, share-link, connect, and end-share workflow is accessible', 
     assert.equal((await host.locator('#line-numbers').textContent()).split('\n').length, 4);
     assert.equal(await host.locator('.indent-guide').count(), 2);
     assert.equal(await host.locator('.select-control').evaluate(element => getComputedStyle(element, '::after').content), '""');
+    const editorLayout = await host.evaluate(() => ({
+      titleTop: document.querySelector('#note-title').getBoundingClientRect().top,
+      languageTop: document.querySelector('#note-language').getBoundingClientRect().top,
+      mirrorBorder: getComputedStyle(document.querySelector('#code-mirror')).borderTopWidth,
+      highlighted: document.querySelector('#code-mirror').innerHTML.includes('hljs-')
+    }));
+    assert.equal(editorLayout.titleTop, editorLayout.languageTop);
+    assert.equal(editorLayout.mirrorBorder, '0px');
+    assert.equal(editorLayout.highlighted, true);
     const editorA11y = await new AxeBuilder({ page: host }).analyze();
     assert.deepEqual(editorA11y.violations.filter(item => ['critical', 'serious'].includes(item.impact)), []);
     await host.getByRole('button', { name: 'Save note' }).click();

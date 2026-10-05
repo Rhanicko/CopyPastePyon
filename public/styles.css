@@ -171,7 +171,7 @@ code, textarea { font-family: ui-monospace, SFMono-Regular, Consolas, "Liberatio
 .editor-card label { margin: 14px 0; }
 .editor-card input, .editor-card select { background: color-mix(in srgb, var(--bg) 72%, var(--surface)); }
 .editor-card .code-field { grid-column: 1 / -1; margin-bottom: 0; }
-.language-field small { display: block; margin-top: 3px; color: var(--muted); font-size: 11px; font-weight: 400; }
+.language-field small { display: block; margin-top: 5px; color: var(--muted); font-size: 11px; font-weight: 400; }
 .select-control { position: relative; display: block; margin-top: 7px; }
 .select-control::after { position: absolute; top: 50%; right: 16px; width: 7px; height: 7px; border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted); content: ''; pointer-events: none; transform: translateY(-68%) rotate(45deg); }
 .select-control select { margin-top: 0; background-image: none; }
@@ -179,13 +179,17 @@ code, textarea { font-family: ui-monospace, SFMono-Regular, Consolas, "Liberatio
 .code-editor:focus-within { border-color: var(--accent); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 13%, transparent); }
 #line-numbers { width: 52px; min-width: 52px; max-height: 518px; margin: 0; overflow: hidden; border: 0; border-right: 1px solid var(--border); border-radius: 0; background: color-mix(in srgb, var(--surface) 55%, var(--code)); color: var(--muted); font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 13px; line-height: 1.6; padding: 14px 10px; text-align: right; user-select: none; }
 .code-stage { position: relative; min-width: 0; flex: 1; overflow: hidden; }
-#code-mirror { position: absolute; top: 0; left: 0; min-width: 100%; margin: 0; padding: 14px 18px; color: var(--text); font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace; font-size: 13px; line-height: 1.6; pointer-events: none; white-space: pre; }
+#code-mirror { position: absolute; top: 0; left: 0; min-width: 100%; max-height: none; margin: 0; overflow: visible; border: 0; border-radius: 0; background: transparent; padding: 14px 18px; color: var(--text); font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace; font-size: 13px; line-height: 1.6; pointer-events: none; white-space: pre; }
 .code-line { display: block; min-height: 1.6em; }
 .indent-guide { display: inline-block; width: 2ch; height: 1.6em; border-left: 1px solid color-mix(in srgb, var(--border) 76%, transparent); vertical-align: bottom; }
 .indent-remainder { display: inline; }
-.code-editor textarea { position: relative; z-index: 1; min-width: 0; min-height: 460px; margin: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; caret-color: var(--accent); color: transparent; padding: 14px 18px; resize: none; }
+.code-editor textarea { position: relative; z-index: 1; min-width: 0; min-height: 460px; margin: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; caret-color: var(--accent); color: transparent; padding: 14px 18px; resize: none; scrollbar-color: color-mix(in srgb, var(--muted) 55%, transparent) transparent; scrollbar-width: thin; }
 .code-editor textarea::selection { background: color-mix(in srgb, var(--accent) 28%, transparent); color: transparent; }
 .code-editor textarea:focus { box-shadow: none; }
+.code-editor textarea::-webkit-scrollbar { width: 10px; height: 10px; }
+.code-editor textarea::-webkit-scrollbar-track { background: transparent; }
+.code-editor textarea::-webkit-scrollbar-thumb { border: 3px solid transparent; border-radius: 999px; background: color-mix(in srgb, var(--muted) 55%, transparent); background-clip: padding-box; }
+.code-editor textarea::-webkit-scrollbar-thumb:hover { background: var(--muted); background-clip: padding-box; }
 .editor-help { margin: 13px 2px 0; }
 .format-notice { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 0 16px; border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border)); border-radius: 10px; background: color-mix(in srgb, var(--accent) 10%, var(--surface)); padding: 9px 13px; color: var(--text); font-size: 14px; }
 

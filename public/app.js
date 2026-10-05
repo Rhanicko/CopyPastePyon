@@ -94,11 +94,11 @@ function detectLanguage(content) {
   if (/\b(?:const|let|var|function|import|export|async|await)\b|=>/m.test(value)) return 'JavaScript';
   return null;
 }
-function codeMirrorMarkup(value) {
+function codeMirrorMarkup(value, language) {
   return value.split('\n').map(line => {
     const leading = (line.match(/^[ \t]*/) || [''])[0]; const visualIndent = leading.replace(/\t/g, '  ');
     const guides = Array.from({ length: Math.floor(visualIndent.length / 2) }, () => '<i class="indent-guide"></i>').join('');
-    const remainder = '&nbsp;'.repeat(visualIndent.length % 2); const text = esc(line.slice(leading.length)) || '&nbsp;';
+    const remainder = '&nbsp;'.repeat(visualIndent.length % 2); const text = codeEsc(line.slice(leading.length), language) || '&nbsp;';
     return `<span class="code-line">${guides}<span class="indent-remainder">${remainder}</span>${text}</span>`;
   }).join('');
 }
@@ -107,7 +107,8 @@ function updateEditorChrome() {
   if (!content || !gutter || !mirror) return;
   gutter.textContent = Array.from({ length: content.value.split('\n').length }, (_, index) => index + 1).join('\n');
   gutter.scrollTop = content.scrollTop;
-  if (mirror.dataset.value !== content.value) { mirror.innerHTML = codeMirrorMarkup(content.value); mirror.dataset.value = content.value; }
+  const language = document.querySelector('#note-language')?.value || 'plaintext'; const source = `${language}\u0000${content.value}`;
+  if (mirror.dataset.value !== source) { mirror.innerHTML = codeMirrorMarkup(content.value, language); mirror.dataset.value = source; }
   mirror.style.transform = `translate(${-content.scrollLeft}px, ${-content.scrollTop}px)`;
 }
 function insertIndentation(event) {
@@ -123,7 +124,7 @@ function insertIndentation(event) {
 }
 function editor(note = null) {
   const current = { ...(note || { title: '', language: 'JavaScript', content: '', version: null }) }; const savedDraft = localStorage.getItem(draftKey(note)); if (savedDraft) { try { const draft = JSON.parse(savedDraft); if (confirm('Restore your unsaved draft for this note?')) Object.assign(current, draft); } catch { localStorage.removeItem(draftKey(note)); } } state.editing = current; state.originalContent = current.content;
-  root.innerHTML = `<section class="editor-page">${header()}<main class="editor-shell"><div class="editor"><button class="text-button back-to-workspace" id="cancel">&larr; Workspace</button><div class="editor-title"><div><p class="eyebrow">${note ? 'EDIT NOTE' : 'NEW NOTE'}</p><h1>${note ? esc(note.title) : 'New code note'}</h1></div><div class="editor-actions"><button class="secondary" id="format">Format code</button><button class="primary" id="save">Save note</button></div></div><div id="format-notice" class="format-notice" hidden>Formatting preview is not saved yet. <button class="text-button" id="revert">Revert</button></div><div class="editor-card"><label>Title<input id="note-title" maxlength="120" value="${esc(current.title)}" placeholder="Untitled note"></label><label class="language-field"><span>Language <small id="language-status" aria-live="polite">Auto-detects pasted code</small></span><span class="select-control"><select id="note-language">${languages.map(lang => `<option ${lang === current.language ? 'selected' : ''}>${lang}</option>`).join('')}</select></span></label><label class="code-field"><span>Code</span><div class="code-editor"><pre id="line-numbers" aria-hidden="true"></pre><div class="code-stage"><pre id="code-mirror" aria-hidden="true"></pre><textarea id="note-content" spellcheck="false" placeholder="Paste or write code here..."></textarea></div></div></label></div><p class="muted editor-help">Formatting is a preview until you save.</p></div></main></section>`;
+  root.innerHTML = `<section class="editor-page">${header()}<main class="editor-shell"><div class="editor"><button class="text-button back-to-workspace" id="cancel">&larr; Workspace</button><div class="editor-title"><div><p class="eyebrow">${note ? 'EDIT NOTE' : 'NEW NOTE'}</p><h1>${note ? esc(note.title) : 'New code note'}</h1></div><div class="editor-actions"><button class="secondary" id="format">Format code</button><button class="primary" id="save">Save note</button></div></div><div id="format-notice" class="format-notice" hidden>Formatting preview is not saved yet. <button class="text-button" id="revert">Revert</button></div><div class="editor-card"><label>Title<input id="note-title" maxlength="120" value="${esc(current.title)}" placeholder="Untitled note"></label><label class="language-field"><span>Language</span><span class="select-control"><select id="note-language">${languages.map(lang => `<option ${lang === current.language ? 'selected' : ''}>${lang}</option>`).join('')}</select></span><small id="language-status" aria-live="polite">Auto-detects pasted code</small></label><label class="code-field"><span>Code</span><div class="code-editor"><pre id="line-numbers" aria-hidden="true"></pre><div class="code-stage"><pre id="code-mirror" aria-hidden="true"></pre><textarea id="note-content" spellcheck="false" placeholder="Paste or write code here..."></textarea></div></div></label></div><p class="muted editor-help">Formatting is a preview until you save.</p></div></main></section>`;
   bindHeader();
   document.querySelector('#cancel').onclick = renderWorkspace;
   document.querySelector('#save').onclick = event => withButton(event.currentTarget, 'Saving…', () => saveNote(note));
@@ -131,7 +132,7 @@ function editor(note = null) {
   const persistDraft = debounce(() => localStorage.setItem(draftKey(note), JSON.stringify({ title: document.querySelector('#note-title').value, language: document.querySelector('#note-language').value, content: document.querySelector('#note-content').value })), 300);
   const language = document.querySelector('#note-language'); const content = document.querySelector('#note-content');
   content.value = current.content;
-  document.querySelector('#note-title').addEventListener('input', persistDraft); language.addEventListener('change', persistDraft); content.addEventListener('input', () => { updateEditorChrome(); persistDraft(); }); content.addEventListener('scroll', updateEditorChrome); content.addEventListener('keydown', insertIndentation);
+  document.querySelector('#note-title').addEventListener('input', persistDraft); language.addEventListener('change', () => { updateEditorChrome(); persistDraft(); }); content.addEventListener('input', () => { updateEditorChrome(); persistDraft(); }); content.addEventListener('scroll', updateEditorChrome); content.addEventListener('keydown', insertIndentation);
   content.addEventListener('paste', event => { const detected = detectLanguage(event.clipboardData?.getData('text/plain')); if (!detected) return; language.value = detected; document.querySelector('#language-status').textContent = `Detected ${detected}`; persistDraft(); });
   document.querySelector('#revert').onclick = () => { content.value = state.originalContent; updateEditorChrome(); document.querySelector('#format-notice').hidden = true; message('Original code restored'); };
   updateEditorChrome();
