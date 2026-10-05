@@ -5,6 +5,10 @@ const express = require('express');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const prettier = require('prettier');
+const phpPlugin = require('@prettier/plugin-php');
+const javaPlugin = require('prettier-plugin-java');
+const shellPlugin = require('prettier-plugin-sh');
+const { format: formatSql } = require('sql-formatter');
 const db = require('./db');
 
 const app = express();
@@ -140,11 +144,40 @@ app.post('/api/workspaces/:code/close', needWorkspace, (req, res) => {
   db.prepare("UPDATE workspaces SET status = 'closed' WHERE id = ?").run(req.workspace.id);
   req.app.get('disconnectWorkspace')?.(req.workspace.id, 'workspace:closed'); res.status(204).end();
 });
-const formatters = { JavaScript: 'babel', TypeScript: 'typescript', JSON: 'json', HTML: 'html', CSS: 'css', Markdown: 'markdown' };
-app.post('/api/format', (req, res) => {
-  const parser = formatters[req.body.language]; if (!parser) return apiError(res, 422, `Formatting is not available for ${req.body.language || 'this language'} yet. Your original code is unchanged.`);
-  const content = String(req.body.content || ''); if (content.length > maxNoteSize) return apiError(res, 413, 'This note is larger than the configured limit.');
-  Promise.resolve(prettier.format(content, { parser, tabWidth: 2, singleQuote: true })).then(formatted => res.json({ content: formatted })).catch(() => apiError(res, 422, 'This code could not be formatted safely. The original code has been preserved.'));
+const prettierFormatters = {
+  JavaScript: { parser: 'babel' }, TypeScript: { parser: 'typescript' }, JSON: { parser: 'json' }, HTML: { parser: 'html' }, CSS: { parser: 'css' }, Markdown: { parser: 'markdown' },
+  PHP: { parser: 'php', plugins: [phpPlugin] }, Java: { parser: 'java', plugins: [javaPlugin] }, Bash: { parser: 'sh', plugins: [shellPlugin] }
+};
+function stripTrailingWhitespace(content) { return content.replace(/\r\n?/g, '\n').split('\n').map(line => line.replace(/[ \t]+$/g, '')).join('\n'); }
+function formatBracedCode(content) {
+  let depth = 0;
+  const output = stripTrailingWhitespace(content).split('\n').map(line => {
+    const trimmed = line.trim();
+    if (!trimmed) return '';
+    const closing = (trimmed.match(/^[}\])]+/) || [''])[0].length;
+    const indent = Math.max(0, depth - closing);
+    const structural = trimmed.replace(/(['"]).*?\1/g, '').replace(/\/\/.*$|\/\*.*?\*\//g, '');
+    const opens = (structural.match(/[\{\[\(]/g) || []).length;
+    const closes = (structural.match(/[\}\]\)]/g) || []).length;
+    depth = Math.max(0, depth + opens - closes);
+    return `${'  '.repeat(indent)}${trimmed}`;
+  });
+  return output.join('\n');
+}
+async function formatCode(language, content) {
+  if (language === 'SQL') return formatSql(content, { language: 'sql', keywordCase: 'preserve' });
+  if (['C', 'C++', 'C#'].includes(language)) return formatBracedCode(content);
+  if (language === 'Python') return stripTrailingWhitespace(content);
+  const formatter = prettierFormatters[language];
+  if (!formatter) throw new Error('Unsupported language');
+  return prettier.format(content, { ...formatter, tabWidth: 2, singleQuote: true });
+}
+app.post('/api/format', async (req, res) => {
+  const language = String(req.body.language || '');
+  const content = String(req.body.content || '');
+  if (!validLanguages.includes(language)) return apiError(res, 422, 'Please choose a supported language.');
+  if (content.length > maxNoteSize) return apiError(res, 413, 'This note is larger than the configured limit.');
+  try { res.json({ content: await formatCode(language, content) }); } catch { apiError(res, 422, 'This code could not be formatted safely. The original code has been preserved.'); }
 });
 app.use('/api', (req, res) => apiError(res, 404, 'API route not found.'));
 app.use((err, req, res, next) => { console.error(err); apiError(res, err.type === 'entity.too.large' ? 413 : 500, err.type === 'entity.too.large' ? 'This note is larger than the configured limit.' : 'Something went wrong. Please try again.'); });

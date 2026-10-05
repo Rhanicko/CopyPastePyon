@@ -68,17 +68,56 @@ function bindWorkspace() {
 async function shareWorkspace() { const url = `${location.origin}${location.pathname}?join=${encodeURIComponent(state.workspace.code)}`; try { if (navigator.share) { await navigator.share({ title: 'Join my CopyPastePyon workspace', text: 'Open this link to join my shared code workspace.', url }); message('Share link opened'); } else { await copyText(url, 'Workspace link copied'); } } catch (error) { if (error.name !== 'AbortError') await copyText(url, 'Workspace link copied'); } }
 async function closeWorkspace() { if (!confirm('End sharing this workspace? All users will be disconnected and the link will stop working immediately.')) return; try { await api(`/api/workspaces/${state.workspace.code}/close`, { method: 'POST' }); message('Workspace sharing ended'); landing(); } catch (error) { message(error.message, 'error'); } }
 function draftKey(note) { return `cpp-draft:${state.workspace.code}:${note?.id || 'new'}`; }
+function detectLanguage(content) {
+  const value = String(content || '').trim();
+  if (!value) return null;
+  if (/^[\[{]/.test(value)) { try { JSON.parse(value); return 'JSON'; } catch {} }
+  if (/^<!doctype\b|^<\/?[a-z][\s\S]*>/i.test(value)) return 'HTML';
+  if (/^\s*(?:#{1,6}\s|[-*+]\s|\d+\.\s|```)/m.test(value)) return 'Markdown';
+  if (/^#!.*\b(?:ba)?sh\b|^\s*(?:if|for|while)\b.*\b(?:then|do)\b|^\s*(?:echo|export|fi|done|esac)\b/m.test(value)) return 'Bash';
+  if (/^\s*(?:select|insert|update|delete|create|alter|with)\b[\s\S]*\b(?:from|into|table|set)\b/i.test(value)) return 'SQL';
+  if (/<\?php|\$[A-Za-z_]\w*\s*(?:=|->)|\bnamespace\s+\w+;/i.test(value)) return 'PHP';
+  if (/^\s*(?:def|class)\s+\w+.*:|^\s*(?:from\s+\w+\s+import|import\s+\w+)\b|^\s*if\s+__name__\s*==/m.test(value)) return 'Python';
+  if (/^\s*(?:using\s+System|namespace\s+\w+|public\s+(?:static\s+)?class\s+\w+).*$/m.test(value)) return 'C#';
+  if (/^\s*(?:package\s+[\w.]+;|import\s+java\.|public\s+(?:final\s+)?class\s+\w+)/m.test(value)) return 'Java';
+  if (/^\s*#include\s*<(?:(?:iostream|vector|string|memory|map)|[\w/]+\.h)>|\bstd::|\busing\s+namespace\s+std/m.test(value)) return 'C++';
+  if (/^\s*#include\s*[<\"]|\b(?:printf|scanf|malloc|free)\s*\(|\bint\s+main\s*\(/m.test(value)) return 'C';
+  if (/(?:^|\n)\s*(?:[.#]?[\w-]+(?:\s*,\s*[.#]?[\w-]+)*)\s*\{[^}]*[\w-]+\s*:/m.test(value)) return 'CSS';
+  if (/\b(?:interface|type)\s+\w+\s*(?:=|\{)|:\s*(?:string|number|boolean|unknown|never)\b|\bas\s+\w+/m.test(value)) return 'TypeScript';
+  if (/\b(?:const|let|var|function|import|export|async|await)\b|=>/m.test(value)) return 'JavaScript';
+  return null;
+}
+function updateEditorChrome() {
+  const content = document.querySelector('#note-content'); const gutter = document.querySelector('#line-numbers');
+  if (!content || !gutter) return;
+  gutter.textContent = Array.from({ length: content.value.split('\n').length }, (_, index) => index + 1).join('\n');
+  gutter.scrollTop = content.scrollTop;
+}
+function insertIndentation(event) {
+  if (event.key !== 'Tab') return;
+  event.preventDefault();
+  const field = event.currentTarget; const start = field.selectionStart;
+  if (event.shiftKey) {
+    const lineStart = field.value.lastIndexOf('\n', Math.max(0, start - 1)) + 1;
+    const removable = field.value.slice(lineStart, lineStart + 2).match(/^ {1,2}|^\t/);
+    if (removable) field.setRangeText('', lineStart, lineStart + removable[0].length, 'preserve');
+  } else field.setRangeText('  ', start, field.selectionEnd, 'end');
+  field.dispatchEvent(new Event('input', { bubbles: true }));
+}
 function editor(note = null) {
   const current = { ...(note || { title: '', language: 'JavaScript', content: '', version: null }) }; const savedDraft = localStorage.getItem(draftKey(note)); if (savedDraft) { try { const draft = JSON.parse(savedDraft); if (confirm('Restore your unsaved draft for this note?')) Object.assign(current, draft); } catch { localStorage.removeItem(draftKey(note)); } } state.editing = current; state.originalContent = current.content;
-  root.innerHTML = `<section class="editor-page">${header()}<div class="editor"><button class="text-button" id="cancel">← Workspace</button><div class="editor-title"><div><p class="eyebrow">${note ? 'EDIT NOTE' : 'NEW NOTE'}</p><h1>${note ? esc(note.title) : 'Create a code note'}</h1></div><div class="editor-actions"><button class="secondary" id="format">Format code</button><button class="primary" id="save">Save note</button></div></div><div id="format-notice" class="format-notice" hidden>Formatting preview is not saved yet. <button class="text-button" id="revert">Revert to original</button></div><label>Title<input id="note-title" maxlength="120" value="${esc(current.title)}" placeholder="e.g. Python Student Logger"></label><label>Language<select id="note-language">${languages.map(lang => `<option ${lang === current.language ? 'selected' : ''}>${lang}</option>`).join('')}</select></label><label>Code<textarea id="note-content" spellcheck="false" placeholder="Paste or write code here…">${esc(current.content)}</textarea></label><p class="muted">Formatting is always a preview. Your original code is only replaced if you save the note.</p></div></section>`;
+  root.innerHTML = `<section class="editor-page">${header()}<main class="editor-shell"><div class="editor"><button class="text-button back-to-workspace" id="cancel">&larr; Workspace</button><div class="editor-title"><div><p class="eyebrow">${note ? 'EDIT NOTE' : 'NEW NOTE'}</p><h1>${note ? esc(note.title) : 'New code note'}</h1></div><div class="editor-actions"><button class="secondary" id="format">Format code</button><button class="primary" id="save">Save note</button></div></div><div id="format-notice" class="format-notice" hidden>Formatting preview is not saved yet. <button class="text-button" id="revert">Revert</button></div><div class="editor-card"><label>Title<input id="note-title" maxlength="120" value="${esc(current.title)}" placeholder="Untitled note"></label><label class="language-field"><span>Language <small id="language-status" aria-live="polite">Auto-detects pasted code</small></span><select id="note-language">${languages.map(lang => `<option ${lang === current.language ? 'selected' : ''}>${lang}</option>`).join('')}</select></label><label class="code-field"><span>Code</span><div class="code-editor"><pre id="line-numbers" aria-hidden="true"></pre><textarea id="note-content" spellcheck="false" placeholder="Paste or write code here...">${esc(current.content)}</textarea></div></label></div><p class="muted editor-help">Formatting is a preview until you save.</p></div></main></section>`;
   document.querySelector('#cancel').onclick = renderWorkspace;
   document.querySelector('#save').onclick = event => withButton(event.currentTarget, 'Saving…', () => saveNote(note));
   document.querySelector('#format').onclick = formatCurrent;
   const persistDraft = debounce(() => localStorage.setItem(draftKey(note), JSON.stringify({ title: document.querySelector('#note-title').value, language: document.querySelector('#note-language').value, content: document.querySelector('#note-content').value })), 300);
-  document.querySelector('#note-title').addEventListener('input', persistDraft); document.querySelector('#note-language').addEventListener('change', persistDraft); document.querySelector('#note-content').addEventListener('input', persistDraft);
-  document.querySelector('#revert').onclick = () => { document.querySelector('#note-content').value = state.originalContent; document.querySelector('#format-notice').hidden = true; message('Original code restored'); };
+  const language = document.querySelector('#note-language'); const content = document.querySelector('#note-content');
+  document.querySelector('#note-title').addEventListener('input', persistDraft); language.addEventListener('change', persistDraft); content.addEventListener('input', () => { updateEditorChrome(); persistDraft(); }); content.addEventListener('scroll', updateEditorChrome); content.addEventListener('keydown', insertIndentation);
+  content.addEventListener('paste', event => { const detected = detectLanguage(event.clipboardData?.getData('text/plain')); if (!detected) return; language.value = detected; document.querySelector('#language-status').textContent = `Detected ${detected}`; persistDraft(); });
+  document.querySelector('#revert').onclick = () => { content.value = state.originalContent; updateEditorChrome(); document.querySelector('#format-notice').hidden = true; message('Original code restored'); };
+  updateEditorChrome();
 }
-async function formatCurrent() { const content = document.querySelector('#note-content').value; const language = document.querySelector('#note-language').value; try { const data = await api('/api/format', { method: 'POST', body: JSON.stringify({ content, language }) }); document.querySelector('#note-content').value = data.content; document.querySelector('#format-notice').hidden = false; message('Formatting preview ready'); } catch (error) { message(error.message, 'error'); } }
+async function formatCurrent() { const content = document.querySelector('#note-content'); const language = document.querySelector('#note-language').value; try { const data = await api('/api/format', { method: 'POST', body: JSON.stringify({ content: content.value, language }) }); content.value = data.content; updateEditorChrome(); document.querySelector('#format-notice').hidden = false; message('Formatting preview ready'); } catch (error) { message(error.message, 'error'); } }
 async function saveNote(existing) { const payload = { title: document.querySelector('#note-title').value, language: document.querySelector('#note-language').value, content: document.querySelector('#note-content').value }; try { let result; if (existing) { result = await api(`/api/workspaces/${state.workspace.code}/notes/${existing.id}`, { method: 'PATCH', body: JSON.stringify({ ...payload, version: existing.version }) }); } else { result = await api(`/api/workspaces/${state.workspace.code}/notes`, { method: 'POST', body: JSON.stringify(payload) }); } localStorage.removeItem(draftKey(existing)); updateNote(result.note); renderWorkspace(); message('Note saved'); } catch (error) { if (error.status === 409 && error.data.note && confirm(`${error.message}\n\nReload the latest version?`)) editor(error.data.note); else message(error.message, 'error'); } }
 function updateNote(note) { const index = state.notes.findIndex(item => item.id === note.id); if (index >= 0) state.notes[index] = note; else state.notes.unshift(note); }
 async function copyText(value, success) { try { await navigator.clipboard.writeText(value); message(success); } catch { const area = document.createElement('textarea'); area.value = value; document.body.append(area); area.select(); const copied = document.execCommand('copy'); area.remove(); copied ? message(success) : message('Clipboard access was blocked. Select the code and copy it manually.', 'error'); } }

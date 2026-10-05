@@ -26,8 +26,16 @@ test('browser host, share-link, connect, and end-share workflow is accessible', 
     assert.match(code, /^[A-Z0-9]{8}$/);
     await host.getByRole('button', { name: '+ New note' }).click();
     await host.locator('#note-title').fill('Python Student Logger');
-    await host.locator('#note-language').selectOption('Python');
-    await host.locator('#note-content').fill('students=[]\n\ndef add_student(name):\n    students.append(name)');
+    await host.locator('#note-content').evaluate(element => {
+      const pasted = 'students=[]\n\ndef add_student(name):\n    students.append(name)';
+      const transfer = new DataTransfer(); transfer.setData('text/plain', pasted);
+      element.dispatchEvent(new ClipboardEvent('paste', { bubbles: true, clipboardData: transfer }));
+      element.value = pasted; element.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+    assert.equal(await host.locator('#note-language').inputValue(), 'Python');
+    assert.equal((await host.locator('#line-numbers').textContent()).split('\n').length, 4);
+    const editorA11y = await new AxeBuilder({ page: host }).analyze();
+    assert.deepEqual(editorA11y.violations.filter(item => ['critical', 'serious'].includes(item.impact)), []);
     await host.getByRole('button', { name: 'Save note' }).click();
     await host.getByText('Python Student Logger').first().waitFor();
     const workspaceA11y = await new AxeBuilder({ page: host }).analyze();
