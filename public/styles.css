@@ -95,6 +95,7 @@ label span { color: var(--muted); font-weight: 400; }
 .setup-form input, .setup-form select { min-height: 48px; margin-top: 8px; background-color: color-mix(in srgb, var(--bg) 78%, var(--surface)); transition: border-color .18s ease, box-shadow .18s ease, background-color .18s ease, transform .18s ease; }
 .setup-form input:hover, .setup-form select:hover { border-color: color-mix(in srgb, var(--accent) 40%, var(--border)); }
 .setup-form input:focus, .setup-form select:focus { border-color: var(--accent); background-color: var(--bg); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 13%, transparent); outline: 0; transform: translateY(-1px); }
+.join-form .code-input { background-color: color-mix(in srgb, var(--accent) 6%, var(--surface)); color: var(--accent); font-size: 15px; }
 .create-workspace-button { display: grid; min-height: 54px; margin-top: 14px; padding: 9px 16px; place-content: center; line-height: 1.15; transition: transform .18s ease, box-shadow .18s ease, background-color .18s ease; }
 .create-workspace-button:hover { box-shadow: 0 9px 22px color-mix(in srgb, var(--accent) 20%, transparent); transform: translateY(-2px); }
 .create-workspace-button:active { transform: translateY(0); }
