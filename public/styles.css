@@ -130,6 +130,12 @@ aside h2 small { float: right; font-weight: 400; letter-spacing: 0; text-transfo
 .remove-user:hover { background: var(--danger-bg); }
 .settings label { color: var(--muted); font-size: 12px; }
 .settings select { margin-top: 5px; }
+.control-card { display: grid; width: 100%; min-height: 58px; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 10px; margin-top: 12px; border: 1px solid var(--border); border-radius: 10px; background: color-mix(in srgb, var(--surface-raised) 72%, var(--bg)); color: var(--text); padding: 10px 11px 10px 12px; text-align: left; transition: border-color .18s ease, background-color .18s ease, transform .18s ease; }
+.control-card:hover { border-color: color-mix(in srgb, var(--accent) 44%, var(--border)); background: color-mix(in srgb, var(--accent) 8%, var(--surface-raised)); transform: translateY(-1px); }
+.control-card > span { font-size: 13px; }
+.control-card small { display: block; margin-top: 3px; color: var(--muted); font-size: 11px; font-weight: 500; }
+.control-card b { display: grid; width: 28px; height: 28px; border-radius: 8px; background: color-mix(in srgb, var(--accent) 12%, var(--surface)); color: var(--accent); font-size: 18px; font-weight: 500; place-items: center; }
+.control-card[aria-busy="true"] { display: flex; justify-content: center; }
 
 .notes { min-width: 0; padding: 18px 0 0; }
 .workspace-title { display: flex; align-items: flex-end; justify-content: space-between; gap: 18px; }
