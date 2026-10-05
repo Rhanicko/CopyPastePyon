@@ -65,12 +65,12 @@ test('browser host, share-link, connect, and end-share workflow is accessible', 
     await guest.getByLabel('Display name optional').fill('Mark');
     await guest.getByRole('button', { name: 'Connect' }).click();
     await guest.getByText('Python Student Logger').first().waitFor();
-    guest.once('dialog', dialog => dialog.accept());
     await guest.getByRole('button', { name: 'Leave' }).click();
+    await guest.getByRole('alertdialog', { name: 'Leave workspace?' }).getByRole('button', { name: 'Leave workspace' }).click();
     await guest.getByRole('button', { name: 'Host a workspace' }).waitFor();
 
-    host.once('dialog', dialog => dialog.accept());
     await host.getByRole('button', { name: 'End share' }).click();
+    await host.getByRole('alertdialog', { name: 'End sharing?' }).getByRole('button', { name: 'End sharing' }).click();
     await host.getByRole('button', { name: 'Host a workspace' }).waitFor();
   } finally {
     await browser.close();
