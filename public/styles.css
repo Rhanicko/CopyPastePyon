@@ -142,7 +142,7 @@ aside h2 small { float: right; font-weight: 400; letter-spacing: 0; text-transfo
 
 .notes { min-width: 0; padding: 18px 0 0; }
 .workspace-title { display: flex; align-items: flex-end; justify-content: space-between; gap: 18px; }
-.workspace-title h1 { margin: 0; font-family: ui-monospace, monospace; font-size: 28px; letter-spacing: .055em; }
+.workspace-title h1 { margin: 0; font-size: 28px; letter-spacing: -.035em; }
 .view-only { border: 1px solid var(--border); border-radius: 8px; background: var(--surface-raised); color: var(--muted); padding: 8px 10px; font-size: 13px; white-space: nowrap; }
 .toolbar { display: flex; gap: 10px; margin: 25px 0 18px; }
 .search-field { position: relative; flex: 1; }
