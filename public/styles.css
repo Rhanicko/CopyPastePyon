@@ -200,7 +200,8 @@ code, textarea { font-family: ui-monospace, SFMono-Regular, Consolas, "Liberatio
 .code-editor textarea::-webkit-scrollbar-thumb { border: 3px solid transparent; border-radius: 999px; background: color-mix(in srgb, var(--muted) 55%, transparent); background-clip: padding-box; }
 .code-editor textarea::-webkit-scrollbar-thumb:hover { background: var(--muted); background-clip: padding-box; }
 .editor-help { margin: 13px 2px 0; }
-.format-notice { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 0 16px; border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border)); border-radius: 10px; background: color-mix(in srgb, var(--accent) 10%, var(--surface)); padding: 9px 13px; color: var(--text); font-size: 14px; }
+.format-notice { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 12px; margin: 0 0 16px; border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border)); border-radius: 10px; background: color-mix(in srgb, var(--accent) 10%, var(--surface)); padding: 9px 13px; color: var(--text); font-size: 14px; }
+.format-notice .text-button { min-height: 30px; padding: 5px 0; white-space: nowrap; }
 
 #toast { position: fixed; z-index: 10; bottom: 22px; left: 50%; max-width: min(92vw, 540px); border-radius: 9px; background: #075e3b; color: #ffffff; font-size: 14px; font-weight: 750; padding: 12px 15px; pointer-events: none; transform: translate(-50%, 18px); transition: transform .18s ease; visibility: hidden; }
 #toast.show { transform: translate(-50%, 0); visibility: visible; }
@@ -235,6 +236,8 @@ code, textarea { font-family: ui-monospace, SFMono-Regular, Consolas, "Liberatio
   .updated { display: block; margin-top: 10px; }
   .editor-shell { min-height: calc(100vh - 60px); padding: 20px 16px 40px; }
   .editor-title { align-items: flex-start; flex-direction: column; }
+  .editor-actions { display: grid; width: 100%; grid-template-columns: auto minmax(0, 1fr); gap: 8px; }
+  .editor-actions #save { min-width: 0; }
   .editor-card { grid-template-columns: 1fr; padding: 8px 14px 14px; }
   .editor-card .code-field { grid-column: auto; }
   .code-editor, .code-editor textarea { min-height: 360px; }
@@ -250,9 +253,7 @@ code, textarea { font-family: ui-monospace, SFMono-Regular, Consolas, "Liberatio
   .note-actions { flex-wrap: wrap; }
   .form-page { padding: 18px 16px 30px; }
   .panel { border-radius: 16px; padding: 25px 21px; }
-  .editor-actions { width: 100%; }
-  .editor-actions button { flex: 1; }
-  .format-notice { align-items: flex-start; flex-direction: column; }
+  .format-notice { gap: 9px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
