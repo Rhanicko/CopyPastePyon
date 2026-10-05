@@ -22,6 +22,9 @@ test('host, connect, permissions, notes, conflicts, and workspace closure', asyn
   assert.match(host.body.workspace.code, /^[A-Z0-9]{8}$/); assert.equal(host.body.session.role, 'host');
   const code = host.body.workspace.code, hostToken = host.body.session.token;
   const joined = await request(app).post('/api/workspaces/join').send({ code, displayName: 'Mark' }).expect(200);
+  const leaving = await request(app).post('/api/workspaces/join').send({ code, displayName: 'Leaving' }).expect(200);
+  await request(app).post(`/api/workspaces/${code}/leave`).set('X-Session-Token', leaving.body.session.token).expect(204);
+  await request(app).get(`/api/workspaces/${code}/notes`).set('X-Session-Token', leaving.body.session.token).expect(401);
   const viewerWorkspace = await request(app).post('/api/workspaces').send({ permissionMode: 'view_only' }).expect(201);
   const viewer = await request(app).post('/api/workspaces/join').send({ code: viewerWorkspace.body.workspace.code, displayName: 'Viewer' }).expect(200);
   await request(app).post(`/api/workspaces/${viewerWorkspace.body.workspace.code}/notes`).set('X-Session-Token', viewer.body.session.token).send({ title: 'Blocked', language: 'JavaScript', content: '' }).expect(403);

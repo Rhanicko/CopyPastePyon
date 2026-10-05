@@ -125,6 +125,14 @@ app.delete('/api/workspaces/:code/users/:sessionId', needWorkspace, (req, res) =
   req.app.get('disconnectSession')?.(removed.id);
   res.status(204).end();
 });
+app.post('/api/workspaces/:code/leave', needWorkspace, (req, res) => {
+  if (req.session.role === 'host') return apiError(res, 422, 'The host can end sharing instead.');
+  const left = db.prepare('UPDATE sessions SET revoked_at = ? WHERE id = ? AND workspace_id = ? AND revoked_at IS NULL RETURNING id').get(now(), req.session.id, req.workspace.id);
+  if (!left) return apiError(res, 404, 'Your connection is no longer active.');
+  req.app.get('io')?.to(`workspace:${req.workspace.id}`).emit('workspace:user_removed', { id: left.id });
+  req.app.get('disconnectSession')?.(left.id);
+  res.status(204).end();
+});
 app.patch('/api/workspaces/:code/settings', needWorkspace, (req, res) => {
   if (req.session.role !== 'host') return apiError(res, 403, 'Only the host can change workspace settings.');
   const mode = req.body.permissionMode;

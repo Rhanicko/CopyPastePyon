@@ -24,6 +24,9 @@ test('browser host, share-link, connect, and end-share workflow is accessible', 
     await host.getByRole('button', { name: 'Create workspace' }).click();
     const code = await host.locator('.workspace-code strong').textContent();
     assert.match(code, /^[A-Z0-9]{8}$/);
+    await host.reload();
+    await host.locator('.workspace-code strong').waitFor();
+    assert.equal(await host.locator('.workspace-code strong').textContent(), code);
     await host.getByRole('button', { name: '+ New note' }).click();
     await host.locator('#note-title').fill('Python Student Logger');
     await host.locator('#note-content').evaluate(element => {
@@ -34,6 +37,8 @@ test('browser host, share-link, connect, and end-share workflow is accessible', 
     });
     assert.equal(await host.locator('#note-language').inputValue(), 'Python');
     assert.equal((await host.locator('#line-numbers').textContent()).split('\n').length, 4);
+    assert.equal(await host.locator('.indent-guide').count(), 2);
+    assert.equal(await host.locator('.select-control').evaluate(element => getComputedStyle(element, '::after').content), '""');
     const editorA11y = await new AxeBuilder({ page: host }).analyze();
     assert.deepEqual(editorA11y.violations.filter(item => ['critical', 'serious'].includes(item.impact)), []);
     await host.getByRole('button', { name: 'Save note' }).click();
@@ -47,11 +52,13 @@ test('browser host, share-link, connect, and end-share workflow is accessible', 
     await guest.getByLabel('Display name optional').fill('Mark');
     await guest.getByRole('button', { name: 'Connect' }).click();
     await guest.getByText('Python Student Logger').first().waitFor();
+    guest.once('dialog', dialog => dialog.accept());
+    await guest.getByRole('button', { name: 'Leave' }).click();
+    await guest.getByRole('button', { name: 'Host a workspace' }).waitFor();
 
     host.once('dialog', dialog => dialog.accept());
     await host.getByRole('button', { name: 'End share' }).click();
     await host.getByRole('button', { name: 'Host a workspace' }).waitFor();
-    await guest.getByRole('button', { name: 'Host a workspace' }).waitFor();
   } finally {
     await browser.close();
     io.close();
