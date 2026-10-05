@@ -201,6 +201,7 @@ code, textarea { font-family: ui-monospace, SFMono-Regular, Consolas, "Liberatio
 .code-editor textarea::-webkit-scrollbar-thumb:hover { background: var(--muted); background-clip: padding-box; }
 .editor-help { margin: 13px 2px 0; }
 .format-notice { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 12px; margin: 0 0 16px; border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border)); border-radius: 10px; background: color-mix(in srgb, var(--accent) 10%, var(--surface)); padding: 9px 13px; color: var(--text); font-size: 14px; }
+.format-notice[hidden] { display: none; }
 .format-notice .text-button { min-height: 30px; padding: 5px 0; white-space: nowrap; }
 
 #toast { position: fixed; z-index: 10; bottom: 22px; left: 50%; max-width: min(92vw, 540px); border-radius: 9px; background: #075e3b; color: #ffffff; font-size: 14px; font-weight: 750; padding: 12px 15px; pointer-events: none; transform: translate(-50%, 18px); transition: transform .18s ease; visibility: hidden; }
