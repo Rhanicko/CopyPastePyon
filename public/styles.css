@@ -117,7 +117,10 @@ header { position: sticky; top: 0; z-index: 5; display: flex; height: 64px; alig
 aside { position: sticky; top: 84px; align-self: start; border: 1px solid var(--border); border-radius: 16px; background: linear-gradient(150deg, var(--surface), color-mix(in srgb, var(--surface) 82%, var(--bg))); padding: 18px; }
 .workspace-code { border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--border)); border-radius: 11px; background: color-mix(in srgb, var(--accent) 5%, var(--bg)); padding: 14px; }
 .workspace-code span, .workspace-code small { display: block; color: var(--muted); font-size: 12px; }
-.workspace-code strong { display: block; margin: 7px 0; font-family: ui-monospace, monospace; font-size: 18px; letter-spacing: .12em; }
+.workspace-copy { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 10px; margin: 4px 0; border-radius: 7px; background: transparent; color: var(--text); padding: 3px 2px; text-align: left; }
+.workspace-copy strong { display: block; font-family: ui-monospace, monospace; font-size: 18px; letter-spacing: .12em; }
+.workspace-copy b { display: grid; width: 25px; height: 25px; border: 1px solid transparent; border-radius: 7px; color: var(--muted); font-size: 16px; font-weight: 500; place-items: center; transition: background-color .18s ease, border-color .18s ease, color .18s ease; }
+.workspace-copy:hover b { border-color: color-mix(in srgb, var(--accent) 34%, var(--border)); background: color-mix(in srgb, var(--accent) 11%, var(--surface)); color: var(--accent); }
 .people, .settings { margin-top: 24px; }
 .mobile-workspace-tools { display: none; }
 aside h2 { margin-bottom: 10px; color: var(--muted); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; }
@@ -205,7 +208,8 @@ code, textarea { font-family: ui-monospace, SFMono-Regular, Consolas, "Liberatio
   .workspace-shell { display: block; min-height: calc(100vh - 60px); padding: 14px 0 38px; }
   aside { position: static; margin: 0 16px; border-radius: 14px; padding: 13px 14px; }
   .workspace-code { display: flex; align-items: center; gap: 9px; padding: 10px 12px; }
-  .workspace-code strong { margin: 0; font-size: 16px; }
+  .workspace-copy { width: auto; margin: 0; padding: 0; }
+  .workspace-copy strong { font-size: 16px; }
   .workspace-code small { margin-left: auto; white-space: nowrap; }
   .desktop-workspace-tools { display: none; }
   .mobile-workspace-tools { display: block; margin-top: 10px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); }

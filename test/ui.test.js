@@ -24,6 +24,8 @@ test('browser host, share-link, connect, and end-share workflow is accessible', 
     await host.getByRole('button', { name: 'Create workspace' }).click();
     const code = await host.locator('.workspace-code strong').textContent();
     assert.match(code, /^[A-Z0-9]{8}$/);
+    await host.getByRole('button', { name: `Copy workspace code ${code}` }).click();
+    await host.getByText('Workspace code copied').waitFor();
     await host.reload();
     await host.locator('.workspace-code strong').waitFor();
     assert.equal(await host.locator('.workspace-code strong').textContent(), code);
