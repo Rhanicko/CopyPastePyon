@@ -54,6 +54,8 @@ test('browser host, share-link, connect, and end-share workflow is accessible', 
     assert.deepEqual(editorA11y.violations.filter(item => ['critical', 'serious'].includes(item.impact)), []);
     await host.getByRole('button', { name: 'Save note' }).click();
     await host.getByText('Python Student Logger').first().waitFor();
+    assert.equal((await host.locator('.note-line-numbers').textContent()).split('\n').length, 4);
+    await host.getByText('4 lines').waitFor();
     const workspaceA11y = await new AxeBuilder({ page: host }).analyze();
     assert.deepEqual(workspaceA11y.violations.filter(item => ['critical', 'serious'].includes(item.impact)), []);
 

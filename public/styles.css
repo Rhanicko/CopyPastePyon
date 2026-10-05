@@ -154,10 +154,16 @@ aside h2 small { float: right; font-weight: 400; letter-spacing: 0; text-transfo
 .note-card:hover { border-color: color-mix(in srgb, var(--accent) 40%, var(--border)); transform: translateY(-1px); }
 .note-head { display: flex; justify-content: space-between; gap: 12px; padding: 18px 18px 13px; }
 .note-head h3 { margin: 0 0 8px; font-size: 17px; }
+.note-meta { display: flex; align-items: center; gap: 7px; }
 .tag { display: inline-block; border: 1px solid var(--border); border-radius: 999px; color: var(--muted); padding: 3px 8px; font-size: 12px; }
+.line-count { color: var(--muted); font-size: 12px; }
 .updated { color: var(--muted); font-size: 12px; white-space: nowrap; }
 pre { max-height: 250px; margin: 0; overflow: auto; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); background: var(--code); padding: 16px 18px; }
 code, textarea { font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace; font-size: 13px; line-height: 1.6; }
+.note-preview { display: grid; max-height: 270px; grid-template-columns: 52px max-content; overflow: auto; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); background: var(--code); }
+.note-preview pre { max-height: none; margin: 0; overflow: visible; border: 0; border-radius: 0; background: transparent; font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace; font-size: 13px; line-height: 1.6; }
+.note-line-numbers { position: sticky; z-index: 1; left: 0; min-width: 52px; background: color-mix(in srgb, var(--surface) 58%, var(--code)) !important; color: var(--muted); padding: 16px 10px; text-align: right; user-select: none; }
+.note-source { min-width: max-content; color: var(--text); padding: 16px 18px; white-space: pre; }
 .note-actions { display: flex; align-items: center; gap: 15px; padding: 10px 18px; }
 .empty { display: grid; min-height: 330px; align-content: center; justify-items: center; border: 1px solid var(--border); border-radius: 16px; background: linear-gradient(145deg, color-mix(in srgb, var(--surface) 75%, var(--bg)), var(--surface)); color: var(--muted); padding: 44px 20px; text-align: center; }
 .empty-mark { display: grid; width: 42px; height: 42px; margin-bottom: 17px; border: 1px solid color-mix(in srgb, var(--accent) 32%, var(--border)); border-radius: 12px; background: color-mix(in srgb, var(--accent) 10%, var(--surface)); color: var(--accent); font-family: ui-monospace, monospace; font-size: 14px; font-weight: 800; place-items: center; }
