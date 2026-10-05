@@ -45,6 +45,13 @@ h1 { letter-spacing: -.045em; line-height: 1.08; }
 input, select, textarea { width: 100%; margin-top: 7px; padding: 11px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); }
 input::placeholder, textarea::placeholder { color: color-mix(in srgb, var(--muted) 80%, transparent); }
 textarea { min-height: 430px; resize: vertical; tab-size: 2; }
+#app > section { animation: view-in .32s cubic-bezier(.22, 1, .36, 1); }
+
+.loading-screen { display: grid; min-height: 100vh; align-content: center; justify-items: center; gap: 12px; padding: 32px; color: var(--text); text-align: center; }
+.loading-mark { display: grid; width: 58px; height: 58px; border-radius: 16px; background: var(--accent); color: var(--accent-ink); font-family: ui-monospace, monospace; font-size: 20px; font-weight: 900; place-items: center; animation: loading-pulse 1.35s ease-in-out infinite; }
+.loading-copy { color: var(--muted); font-size: 14px; }
+.loading-bar { display: block; width: min(180px, 70vw); height: 4px; overflow: hidden; border-radius: 999px; background: var(--surface-raised); }
+.loading-bar i { display: block; width: 42%; height: 100%; border-radius: inherit; background: var(--accent); animation: loading-sweep 1.2s ease-in-out infinite; }
 
 .landing { display: flex; min-height: 100vh; max-width: 720px; align-items: center; flex-direction: column; justify-content: center; margin: auto; padding: 11vh 24px; text-align: center; }
 .brand-mark { display: grid; width: 60px; height: 60px; margin-bottom: 30px; border: 1px solid color-mix(in srgb, var(--accent) 70%, transparent); border-radius: 16px; background: var(--accent); color: var(--accent-ink); font-family: ui-monospace, monospace; font-size: 21px; font-weight: 900; place-items: center; }
@@ -91,6 +98,7 @@ aside { border-right: 1px solid var(--border); padding: 28px 20px; }
 .workspace-code span, .workspace-code small { display: block; color: var(--muted); font-size: 12px; }
 .workspace-code strong { display: block; margin: 7px 0; font-family: ui-monospace, monospace; font-size: 20px; letter-spacing: .12em; }
 .people, .settings { margin-top: 30px; }
+.mobile-workspace-tools { display: none; }
 aside h2 { margin-bottom: 12px; color: var(--muted); font-size: 12px; letter-spacing: .09em; text-transform: uppercase; }
 aside h2 small { float: right; font-weight: 400; letter-spacing: 0; text-transform: none; }
 .user { display: flex; min-height: 34px; align-items: center; gap: 4px; padding: 7px 2px; font-size: 14px; }
@@ -98,6 +106,7 @@ aside h2 small { float: right; font-weight: 400; letter-spacing: 0; text-transfo
 .user i.online { background: var(--accent); }
 .user small { margin-left: auto; color: var(--muted); text-transform: capitalize; }
 .remove-user { min-height: 28px; margin-left: 6px; padding: 3px 6px; border: 1px solid color-mix(in srgb, var(--danger) 45%, var(--border)); background: transparent; color: var(--danger); font-size: 11px; }
+.remove-user:hover { background: var(--danger-bg); }
 .settings label { color: var(--muted); font-size: 12px; }
 .settings select { margin-top: 5px; }
 
@@ -140,7 +149,17 @@ code, textarea { font-family: ui-monospace, SFMono-Regular, Consolas, "Liberatio
   .workspace-code { display: flex; align-items: center; gap: 9px; padding: 10px 12px; }
   .workspace-code strong { margin: 0; font-size: 16px; }
   .workspace-code small { margin-left: auto; white-space: nowrap; }
-  .people, .settings { display: none; }
+  .desktop-workspace-tools { display: none; }
+  .mobile-workspace-tools { display: block; margin-top: 10px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); }
+  .mobile-workspace-tools summary { display: flex; min-height: 43px; align-items: center; justify-content: space-between; padding: 11px 12px; color: var(--text); cursor: pointer; font-size: 14px; font-weight: 700; list-style: none; }
+  .mobile-workspace-tools summary::-webkit-details-marker { display: none; }
+  .mobile-workspace-tools summary::after { content: '+'; color: var(--accent); font-size: 20px; line-height: 1; }
+  .mobile-workspace-tools[open] summary { border-bottom: 1px solid var(--border); }
+  .mobile-workspace-tools[open] summary::after { content: '−'; }
+  .mobile-workspace-tools summary span { margin-left: auto; margin-right: 9px; color: var(--muted); font-size: 12px; font-weight: 400; }
+  .mobile-workspace-tools-content { padding: 0 12px 12px; }
+  .mobile-workspace-tools .people, .mobile-workspace-tools .settings { margin-top: 18px; }
+  .mobile-workspace-tools .user { min-height: 40px; }
   .notes { padding: 24px 16px 38px; }
   .toolbar { flex-direction: column; }
   .toolbar select { width: 100%; }
@@ -162,3 +181,7 @@ code, textarea { font-family: ui-monospace, SFMono-Regular, Consolas, "Liberatio
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
 }
+
+@keyframes view-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes loading-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(.93); } }
+@keyframes loading-sweep { 0% { transform: translateX(-115%); } 55%, 100% { transform: translateX(240%); } }

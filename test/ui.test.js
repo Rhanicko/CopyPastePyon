@@ -50,3 +50,27 @@ test('browser host, share-link, connect, and end-share workflow is accessible', 
     await new Promise(resolve => server.close(resolve));
   }
 });
+
+test('phone layout keeps the full host workspace accessible without horizontal overflow', { timeout: 45_000 }, async () => {
+  const { server, io } = createServer();
+  await new Promise(resolve => server.listen(0, resolve));
+  const baseUrl = `http://127.0.0.1:${server.address().port}`;
+  const browser = await chromium.launch({ executablePath: process.platform === 'win32' && fs.existsSync(chromePath) ? chromePath : undefined, headless: true });
+  try {
+    const page = await (await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true })).newPage();
+    await page.goto(baseUrl);
+    await page.getByRole('button', { name: 'Host a workspace' }).click();
+    await page.getByRole('button', { name: 'Create workspace' }).click();
+    await page.locator('.workspace-code strong').waitFor();
+    await page.getByText('Workspace controls').click();
+    await page.getByRole('button', { name: 'Regenerate code' }).waitFor();
+    const dimensions = await page.evaluate(() => ({ width: document.documentElement.clientWidth, scrollWidth: document.documentElement.scrollWidth }));
+    assert.ok(dimensions.scrollWidth <= dimensions.width, `page overflowed horizontally: ${dimensions.scrollWidth}px > ${dimensions.width}px`);
+    const accessibility = await new AxeBuilder({ page }).analyze();
+    assert.deepEqual(accessibility.violations.filter(item => ['critical', 'serious'].includes(item.impact)), []);
+  } finally {
+    await browser.close();
+    io.close();
+    await new Promise(resolve => server.close(resolve));
+  }
+});

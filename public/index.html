@@ -8,8 +8,15 @@
   <link rel="stylesheet" href="/styles.css" />
   <link rel="stylesheet" href="/vendor/highlight/styles/github-dark.css" />
 </head>
-<body>
-  <main id="app" aria-live="polite"></main>
+<body class="booting">
+  <main id="app" aria-live="polite" aria-busy="true">
+    <section class="loading-screen" aria-label="Loading CopyPastePyon">
+      <div class="loading-mark" aria-hidden="true">&lt;/&gt;</div>
+      <strong>CopyPastePyon</strong>
+      <span class="loading-copy">Preparing your shared workspace</span>
+      <span class="loading-bar" aria-hidden="true"><i></i></span>
+    </section>
+  </main>
   <div id="toast" role="status" aria-live="polite"></div>
   <script src="/vendor/highlight/highlight.min.js"></script>
   <script src="/socket.io/socket.io.js"></script>
